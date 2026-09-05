@@ -1,0 +1,22 @@
+# Virtual Environments
+.venv/
+.venv-*/
+env/
+venv/
+
+# Large Data & Output Artifacts (Ignores entire folders and all sub-content)
+inputs/
+outputs/
+
+# Security & Credentials
+kaggle.json
+
+# Python bytecode, cache & logs
+__pycache__/
+*.py[cod]
+*.log
+
+# OS & Environment files
+.DS_Store
+Thumbs.db
+.env
