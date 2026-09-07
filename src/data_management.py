@@ -42,21 +42,46 @@ def download_model_if_missing(model_path):
 def load_model_and_classes(model_path, class_indices_path):
     """
     Loads and caches the trained Keras model and class index mapping.
-    Downloads the model from GitHub Releases if missing.
+    Automatically downloads the model from GitHub Releases if missing.
     """
-    # Ensure model exists locally or gets downloaded
+    import tensorflow as tf
+    from keras.models import load_model
+    from keras.layers import (
+        Rescaling,
+        RandomFlip,
+        RandomRotation,
+        RandomZoom,
+        Conv2D,
+        MaxPooling2D,
+        Flatten,
+        Dense,
+        Dropout
+    )
+
+    # Ensure model exists locally
     download_model_if_missing(model_path)
 
-    # Load model via tf namespace
-    model = tf.keras.models.load_model(model_path)
+    # Load model with required custom objects
+    model = load_model(
+        model_path,
+        custom_objects={
+            "Rescaling": Rescaling,
+            "RandomFlip": RandomFlip,
+            "RandomRotation": RandomRotation,
+            "RandomZoom": RandomZoom,
+            "Conv2D": Conv2D,
+            "MaxPooling2D": MaxPooling2D,
+            "Flatten": Flatten,
+            "Dense": Dense,
+            "Dropout": Dropout
+        }
+    )
 
     # Load class index mapping
     with open(class_indices_path, 'rb') as f:
         class_indices = pickle.load(f)
 
-    # Invert mapping: {0: 'healthy', 1: 'powdery_mildew'}
     map_labels = {v: k for k, v in class_indices.items()}
-
     return model, map_labels
 
 @st.cache_data
