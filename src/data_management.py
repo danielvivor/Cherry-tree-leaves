@@ -7,8 +7,6 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-from keras.models import load_model
-
 import streamlit as st
 
 def download_model_if_missing(model_path):
@@ -49,8 +47,8 @@ def load_model_and_classes(model_path, class_indices_path):
     # Ensure model exists locally or gets downloaded
     download_model_if_missing(model_path)
 
-    # Load model
-    model = load_model(model_path)
+    # Load model via tf namespace
+    model = tf.keras.models.load_model(model_path)
 
     # Load class index mapping
     with open(class_indices_path, 'rb') as f:
@@ -60,7 +58,6 @@ def load_model_and_classes(model_path, class_indices_path):
     map_labels = {v: k for k, v in class_indices.items()}
 
     return model, map_labels
-
 
 @st.cache_data
 def load_pkl_data(file_path):
