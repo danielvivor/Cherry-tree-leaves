@@ -44,40 +44,25 @@ def load_model_and_classes(model_path, class_indices_path):
     Loads and caches the trained Keras model and class index mapping.
     Automatically downloads the model from GitHub Releases if missing.
     """
-    import tensorflow as tf
-    from keras.models import load_model
-    from keras.layers import (
-        Rescaling,
-        RandomFlip,
-        RandomRotation,
-        RandomZoom,
-        Conv2D,
-        MaxPooling2D,
-        Flatten,
-        Dense,
-        Dropout
-    )
-
-    # Ensure model exists locally
     download_model_if_missing(model_path)
 
-    # Load model with required custom objects
-    model = load_model(
+    # Reference layer classes directly via tf.keras.layers to avoid linter warnings
+    model = tf.keras.models.load_model(
         model_path,
         custom_objects={
-            "Rescaling": Rescaling,
-            "RandomFlip": RandomFlip,
-            "RandomRotation": RandomRotation,
-            "RandomZoom": RandomZoom,
-            "Conv2D": Conv2D,
-            "MaxPooling2D": MaxPooling2D,
-            "Flatten": Flatten,
-            "Dense": Dense,
-            "Dropout": Dropout
-        }
+            "Rescaling": tf.keras.layers.Rescaling,
+            "RandomFlip": tf.keras.layers.RandomFlip,
+            "RandomRotation": tf.keras.layers.RandomRotation,
+            "RandomZoom": tf.keras.layers.RandomZoom,
+            "Conv2D": tf.keras.layers.Conv2D,
+            "MaxPooling2D": tf.keras.layers.MaxPooling2D,
+            "Flatten": tf.keras.layers.Flatten,
+            "Dense": tf.keras.layers.Dense,
+            "Dropout": tf.keras.layers.Dropout
+        },
+        compile=False
     )
 
-    # Load class index mapping
     with open(class_indices_path, 'rb') as f:
         class_indices = pickle.load(f)
 
