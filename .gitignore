@@ -6,7 +6,7 @@ venv/
 
 # Large Data & Output Artifacts (Ignores entire folders and all sub-content)
 inputs/
-outputs/
+# outputs/
 
 # Security & Credentials
 kaggle.json
