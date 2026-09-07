@@ -46,22 +46,21 @@ def load_model_and_classes(model_path, class_indices_path):
     """
     download_model_if_missing(model_path)
 
-    # Reference layer classes directly via tf.keras.layers to avoid linter warnings
-    model = tf.keras.models.load_model(
-        model_path,
-        custom_objects={
-            "Rescaling": tf.keras.layers.Rescaling,
-            "RandomFlip": tf.keras.layers.RandomFlip,
-            "RandomRotation": tf.keras.layers.RandomRotation,
-            "RandomZoom": tf.keras.layers.RandomZoom,
-            "Conv2D": tf.keras.layers.Conv2D,
-            "MaxPooling2D": tf.keras.layers.MaxPooling2D,
-            "Flatten": tf.keras.layers.Flatten,
-            "Dense": tf.keras.layers.Dense,
-            "Dropout": tf.keras.layers.Dropout
-        },
-        compile=False
-    )
+    custom_objects = {
+        "Rescaling": tf.keras.layers.Rescaling,
+        "RandomFlip": tf.keras.layers.RandomFlip,
+        "RandomRotation": tf.keras.layers.RandomRotation,
+        "RandomZoom": tf.keras.layers.RandomZoom,
+        "Conv2D": tf.keras.layers.Conv2D,
+        "MaxPooling2D": tf.keras.layers.MaxPooling2D,
+        "Flatten": tf.keras.layers.Flatten,
+        "Dense": tf.keras.layers.Dense,
+        "Dropout": tf.keras.layers.Dropout
+    }
+
+    # Wrap in custom_object_scope to intercept nested layer deserialization
+    with tf.keras.utils.custom_object_scope(custom_objects):
+        model = tf.keras.models.load_model(model_path, compile=False)
 
     with open(class_indices_path, 'rb') as f:
         class_indices = pickle.load(f)
