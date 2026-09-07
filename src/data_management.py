@@ -12,16 +12,21 @@ import streamlit as st
 # Auto-download model if missing
 def download_model_if_missing(model_path):
     """
-    Downloads the trained .h5 model from GitHub if it is missing locally.
-    Ensures cloud deployments (Heroku, Render, Railway) work without bundling the model.
+    Downloads the trained .h5 model from GitHub Releases if missing or invalid.
+    Removes corrupted or tiny files.
     """
+    # Remove invalid or incomplete files (<10 MB)
+    if os.path.exists(model_path) and os.path.getsize(model_path) < 10 * 1024 * 1024:
+        os.remove(model_path)
+
+    # Download if missing
     if not os.path.exists(model_path):
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
 
+        # Direct GitHub Releases asset URL (reliable for Heroku)
         url = (
-            "https://media.githubusercontent.com/media/"
-            "danielvivor/Cherry-tree-leaves/main/outputs/v1/"
-            "powdery_mildew_detector_model.h5"
+            "https://github.com/danielvivor/Cherry-tree-leaves/releases/download/"
+            "v1.0.0/powdery_mildew_detector_model.h5"
         )
 
         urllib.request.urlretrieve(url, model_path)
