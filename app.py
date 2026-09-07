@@ -94,7 +94,7 @@ elif page == "Powdery Mildew Detector":
     st.write("Upload cherry leaf images to predict infection status in real time.")
 
     # Load Model Artifacts
-    if os.path.exists(MODEL_PATH) and os.path.exists(CLASS_INDICES_PATH):
+    if os.path.exists(CLASS_INDICES_PATH):
         model, map_labels = load_model_and_classes(MODEL_PATH, CLASS_INDICES_PATH)
         
         uploaded_files = st.file_uploader(
