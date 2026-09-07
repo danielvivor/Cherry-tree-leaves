@@ -23,7 +23,7 @@ def download_model_if_missing(model_path):
 
         url = (
             "https://github.com/danielvivor/Cherry-tree-leaves/releases/download/"
-            "v1.0/powdery_mildew_detector_model.h5"
+            "v1.0.0/powdery_mildew_detector_model.h5"
         )
 
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
