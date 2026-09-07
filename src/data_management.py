@@ -15,6 +15,7 @@ def download_model_if_missing(model_path):
     """
     Downloads the trained .h5 model from GitHub Releases if missing or invalid.
     """
+    # Delete corrupted/incomplete files (<10 MB)
     if os.path.exists(model_path) and os.path.getsize(model_path) < 10 * 1024 * 1024:
         os.remove(model_path)
 
@@ -31,14 +32,13 @@ def download_model_if_missing(model_path):
 
         if response.status_code != 200:
             raise RuntimeError(
-                f"Failed to download model from {url}. "
-                f"HTTP Status: {response.status_code}"
+                f"Model download failed with HTTP Status {response.status_code} for URL: {url}. "
+                "Ensure release 'v1.0.0' is Published and repository is Public."
             )
 
         with open(model_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-
 
 @st.cache_resource
 def load_model_and_classes(model_path, class_indices_path):
@@ -70,7 +70,6 @@ def load_pkl_data(file_path):
     with open(file_path, 'rb') as f:
         data = pickle.load(f)
     return data
-
 
 if __name__ == "__main__":
     print("data_management.py executed successfully!")
