@@ -9,12 +9,10 @@ from PIL import Image
 import tensorflow as tf
 import streamlit as st
 
-
 def download_model_if_missing(model_path):
     """
     Downloads the trained .h5 model from GitHub Releases if missing or invalid.
     """
-    # Remove obviously invalid/tiny files
     if os.path.exists(model_path) and os.path.getsize(model_path) < 10 * 1024 * 1024:
         os.remove(model_path)
 
@@ -37,9 +35,7 @@ def download_model_if_missing(model_path):
 
         with open(model_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
-
+                f.write(chunk)
 
 @st.cache_resource
 def load_model_and_classes(model_path, class_indices_path):
@@ -47,33 +43,16 @@ def load_model_and_classes(model_path, class_indices_path):
     Loads and caches the trained Keras model and class index mapping.
     Automatically downloads the model from GitHub Releases if missing.
     """
-    # Ensure model exists
     download_model_if_missing(model_path)
 
-    # Custom objects for preprocessing and core layers
-    custom_objects = {
-        "Rescaling": tf.keras.layers.Rescaling,
-        "RandomFlip": tf.keras.layers.RandomFlip,
-        "RandomRotation": tf.keras.layers.RandomRotation,
-        "RandomZoom": tf.keras.layers.RandomZoom,
-        "Conv2D": tf.keras.layers.Conv2D,
-        "MaxPooling2D": tf.keras.layers.MaxPooling2D,
-        "Flatten": tf.keras.layers.Flatten,
-        "Dense": tf.keras.layers.Dense,
-        "Dropout": tf.keras.layers.Dropout,
-    }
+    # Load model using native TF 2.15 Keras 2 deserializer
+    model = tf.keras.models.load_model(model_path, compile=False)
 
-    # Load model with correct custom objects
-    with tf.keras.utils.custom_object_scope(custom_objects):
-        model = tf.keras.models.load_model(model_path, compile=False)
-
-    # Load class index mapping
     with open(class_indices_path, "rb") as f:
         class_indices = pickle.load(f)
 
     map_labels = {v: k for k, v in class_indices.items()}
     return model, map_labels
-
 
 @st.cache_data
 def load_pkl_data(file_path):
@@ -83,7 +62,6 @@ def load_pkl_data(file_path):
     with open(file_path, "rb") as f:
         data = pickle.load(f)
     return data
-
 
 if __name__ == "__main__":
     print("data_management.py executed successfully!")
