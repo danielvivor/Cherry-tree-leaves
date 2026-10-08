@@ -113,7 +113,7 @@ elif page == "Powdery Mildew Detector":
 
                 # Render preview
                 with cols[idx % 3]:
-                    st.image(img_pil, caption=file.name, use_container_width=True)
+                    st.image(img_pil, caption=file.name, use_column_width=True)
                     if "Mildew" in prediction['Diagnostic']:
                         st.error(f"**{prediction['Diagnostic']}**\n\nConfidence: {prediction['Confidence (%)']}%")
                     else:
