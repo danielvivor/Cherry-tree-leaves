@@ -1,140 +1,558 @@
 # 🍃 Mildew Detection in Cherry Leaves
 
-The **Mildew Detection in Cherry Leaves** application is an end-to-end Machine Learning tool built with Python and Streamlit to visually detect powdery mildew in cherry tree leaf samples. It aims to streamline crop inspection for **Farmy & Foods** by replacing a time-consuming manual verification process with an instant, scalable ML prediction engine.
+The **Mildew Detection in Cherry Leaves** application is an end-to-end Machine Learning solution developed using **Python**, **TensorFlow/Keras**, and **Streamlit**. The system enables rapid identification of powdery mildew disease in cherry tree leaves through image classification, helping Farmy & Foods replace a slow, labour-intensive manual inspection process with an automated and scalable solution.
 
 ---
 
-## 🎯 Business Requirements
-- **Business Requirement 1:** Conduct a visual study to differentiate healthy cherry leaves from leaves infected with powdery mildew using average images, variability plots, difference images, and visual montages.
-- **Business Requirement 2:** Deliver an accurate binary classification model predicting with at least **97% accuracy** whether a cherry leaf image is healthy or contains powdery mildew.
+# Business Understanding (CRISP-DM)
+
+## Business Requirements
+
+### Business Requirement 1
+
+Conduct a visual study to differentiate healthy cherry leaves from leaves infected with powdery mildew.
+
+### Business Requirement 2
+
+Develop a Machine Learning solution capable of predicting whether a cherry leaf is healthy or infected with powdery mildew with a minimum accuracy threshold of **97%**.
 
 ---
 
-## 📊 Dataset Content & Characteristics
-The dataset used in this project is a curated collection of high-resolution cherry tree leaf images provided by **Farmy & Foods**. The raw image assets are sourced and downloaded directly from the official [Code Institute Cherry Leaves Dataset on Kaggle](https://kaggle.com).
+# Dataset Content
 
-### 🏷️ Target Classes & Image Distribution
-The dataset contains a total of **4,208 images** perfectly distributed in a 50/50 balance across two binary classification categories:
-* **`healthy`**: 2,104 images displaying clear, unblemished cherry tree leaves representing healthy crop conditions.
-* **`powdery_mildew`**: 2,104 images displaying cherry tree leaves presenting clear indicators of powdery mildew (a fungal disease showing white/gray powdery spots and surface anomalies).
+## Dataset Source
 
-### 📐 Image Characteristics & Data Splitting
-* **Format & Color Space:** All files are stored as standard color images in the **RGB** color space.
-* **Dimensionality:** The native shapes of the images vary across the raw collection. Through exploratory data analysis, the mathematical average image shape was calculated to be exactly **256 x 256 pixels**. Consequently, all images are dynamically resized to `256, 256, 3` during data loading.
-* **CRISP-DM Data Partitioning:** To ensure robust evaluation and prevent data leakage, the 4,208 images were split into the following structures:
-  * **Train Set (70%):** 2,944 images used to optimize model weights.
-  * **Validation Set (10%):** 422 images used to monitor training dynamics and prevent overfitting.
-  * **Test Set (20%):** 842 images kept completely unseen for final validation.
+The dataset used in this project was sourced from the Code Institute Cherry Leaves dataset available on Kaggle:
+
+https://www.kaggle.com/codeinstitute/cherry-leaves
+
+## Dataset Description
+
+The dataset contains images of cherry leaves belonging to two classes:
+
+- Healthy
+- Powdery Mildew
+
+The images were collected to support the development of an automated disease detection system capable of identifying fungal infection in cherry plantations.
+
+## Dataset Characteristics
+
+| Feature | Value |
+|----------|----------|
+| Data Type | Image Dataset |
+| Classification Type | Binary Classification |
+| Number of Classes | 2 |
+| Image Colour Space | RGB |
+| Input Dimensions | 256 × 256 × 3 |
+| Target Variable | Leaf Health Status |
+
+## Target Classes
+
+### Healthy
+
+- 2,104 images
+- Leaves free from visible disease symptoms
+
+### Powdery Mildew
+
+- 2,104 images
+- Leaves displaying fungal infection symptoms including white powder-like growth
+
+## Dataset Split
+
+| Dataset | Images |
+|----------|----------|
+| Training | 2,944 |
+| Validation | 422 |
+| Test | 842 |
+| Total | 4,208 |
+
+This train-validation-test split was implemented to ensure robust model evaluation and prevent data leakage.
 
 ---
 
-## 👤 User Stories & ML Mapping
+# Rationale to Map Business Requirements to Data Visualisations and ML Tasks
 
+## Business Requirement 1
 
-| User Story | Description | Task Type | Action & Deliverable | Mapping |
-| :--- | :--- | :--- | :--- | :--- |
-| **1** | As a client, I want to view average image characteristics, variability, and visual differences between healthy and infected leaves, so that I can visually distinguish between them. | Data Visualisation | Interactive **Leaf Visualizer** page displaying average images, variability plots, difference images, and visual montages. | Requirement 1 |
-| **2** | As a client/farm operator, I want to upload single or batch leaf images, so that I can predict instantly whether a leaf is healthy or infected with powdery mildew. | Machine Learning | Interactive **Mildew Detector** page featuring an image uploader widget, real-time CNN prediction engine, confidence scores, and downloadable CSV reports. | Requirement 2 |
-| **3** | As an analyst/IT lead, I want to view ML model performance metrics (loss/accuracy curves, confusion matrix), so that I can verify model accuracy and trust its predictions before scaling. | ML Evaluation | Dedicated **ML Performance** page showcasing dataset distribution, training history plots, held-out test evaluation, and formal validation statements. | Requirements 1 & 2 |
+### Objective
 
-## 🔬 Machine Learning Business Case
+Identify visual differences between healthy leaves and leaves infected with powdery mildew.
 
-* **Goal:** Predict whether a given cherry leaf image is healthy or infected with powdery mildew.
-* **Learning Method:** Supervised Binary Classification using a Convolutional Neural Network (CNN) built in TensorFlow/Keras.
-* **Ideal Outcome:** An automated, scalable Streamlit dashboard that replaces 30-minute manual tree inspections with instant digital predictions (< 2 seconds), allowing staff to target precise chemical treatments.
-* **Data & Splits:** 4,208 cherry leaf images split into **Train (70%)**, **Validation (10%)**, and **Test (20%)** sets, with data augmentation applied during training.
-* **Output:** Categorical label (`Healthy` or `Powdery Mildew`) alongside a continuous prediction probability score and percentage confidence.
-* **Success Criteria:** Achieve at least 97% accuracy and high recall on the held-out test dataset.
+### Data Visualisation Tasks
 
-## 📈 Model Performance & Evaluation Results
+The following visual studies were performed:
 
-The trained CNN model surpassed the business criteria target (>97% accuracy):
+- Healthy leaf image montage
+- Powdery mildew image montage
+- Average image analysis
+- Variability image analysis
+- Difference between average images
+- Pixel-intensity distribution analysis
+- Image dimension analysis
+- Dataset class distribution analysis
 
-* **Test Accuracy:** **100.00%** across 844 test set images.
-* **Test Loss:** `0.0000` (negligible categorical cross-entropy loss).
-* **Confusion Matrix:** Perfect classification on the test set—**422/422 healthy** and **422/422 powdery mildew** leaves were correctly identified with zero false positives or false negatives.
-* **Training Dynamics:** Both training and validation accuracy stabilized above 99% past epoch 8, while validation loss dropped smoothly to near zero without overfitting.
+### Outcome
 
-## 🖥️ Dashboard Architecture & Design
+The visualisations revealed distinguishable patterns between healthy leaves and leaves affected by powdery mildew, supporting the feasibility of automated image classification.
 
-The dashboard is organized into five interactive pages:
+---
 
-1. **Page 1: Summary** — High-level project background, dataset details, CRISP-DM methodology, and business requirements mapping.
-2. **Page 2: Leaf Visualizer** — Interactive visual study displaying average images, standard deviation plots, and image differences.
-3. **Page 3: Mildew Detector** — File uploader widget supporting single or batch uploads, real-time CNN prediction results, confidence meters, and downloadable prediction summary CSV reports.
-4. **Page 4: Hypotheses & Validation** — Explanations of visual signatures (e.g., white fungal patches) verified through pixel intensity analysis.
-5. **Page 5: ML Performance** — Training history plots (Accuracy & Loss curves), test set confusion matrix, and performance metrics.
+## Business Requirement 2
 
-## 📁 Project Directory Structure
+### Objective
+
+Predict whether a cherry leaf contains powdery mildew.
+
+### Machine Learning Task
+
+**Binary Image Classification**
+
+### Learning Method
+
+Supervised Deep Learning using a Convolutional Neural Network (CNN).
+
+### Input
+
+Cherry leaf image.
+
+### Output
+
+Prediction label:
+
+- Healthy
+- Powdery Mildew
+
+along with prediction probability and confidence score.
+
+### Outcome
+
+An automated prediction system integrated into the Streamlit dashboard.
+
+---
+
+# User Stories
+
+| User Story | Requirement |
+|------------|-------------|
+| As a client, I want to visually compare healthy and infected leaves so I can understand the characteristics of powdery mildew. | Business Requirement 1 |
+| As a farm operator, I want to upload an image and receive a disease prediction instantly. | Business Requirement 2 |
+| As a decision-maker, I want to evaluate model performance before deploying the solution. | Business Requirement 2 |
+
+---
+
+# Machine Learning Business Case
+
+## Goal
+
+Predict whether a cherry leaf is healthy or infected with powdery mildew.
+
+## Learning Method
+
+Supervised Binary Classification using a Convolutional Neural Network (CNN).
+
+## Ideal Outcome
+
+Replace manual inspection processes with a near-instant automated diagnostic tool that significantly reduces inspection time while maintaining high diagnostic accuracy.
+
+## Model Inputs
+
+- Cherry leaf image (256 × 256 × 3)
+
+## Model Outputs
+
+- Healthy
+- Powdery Mildew
+
+Confidence probability is also returned to assist decision-making.
+
+## Success Criteria
+
+- Achieve a minimum of 97% test accuracy.
+- Demonstrate strong generalisation on unseen data.
+- Maintain low test loss.
+
+## Failure Criteria
+
+- Test accuracy below 97%.
+- Significant divergence between training and validation performance.
+- Excessive false positives or false negatives.
+
+---
+
+# Project Hypotheses
+
+## Hypothesis 1
+
+Cherry leaves affected by powdery mildew contain visual characteristics that can be objectively distinguished from healthy leaves through image analysis.
+
+### Validation
+
+Evidence collected from:
+
+- Average image analysis
+- Variability image analysis
+- Difference-image analysis
+- Leaf montages
+- Pixel-intensity distribution analysis
+
+### Conclusion
+
+The visual study consistently revealed distinguishable differences between healthy and infected leaves.
+
+**Hypothesis Supported.**
+
+---
+
+## Hypothesis 2
+
+A Convolutional Neural Network can classify cherry leaf images with an accuracy greater than 97%.
+
+### Validation
+
+The trained CNN model was evaluated on previously unseen test images.
+
+Evaluation included:
+
+- Test Accuracy
+- Test Loss
+- Confusion Matrix
+- Learning Curve Analysis
+
+### Conclusion
+
+The model exceeded the project success criterion of 97% accuracy.
+
+**Hypothesis Supported.**
+
+---
+
+# Data Analysis Findings
+
+## Finding 1
+
+Average image analysis revealed visible differences between healthy leaves and leaves affected by powdery mildew.
+
+## Finding 2
+
+Difference-image analysis highlighted regions where infected leaves differed consistently from healthy leaves.
+
+## Finding 3
+
+Image montages demonstrated recurring fungal patterns within infected samples.
+
+## Finding 4
+
+Pixel-intensity distributions showed measurable colour-space differences between classes.
+
+### Overall Conclusion
+
+Business Requirement 1 was successfully addressed through visual analysis.
+
+---
+
+# Model Training & Evolution
+
+Several model configurations were explored before selecting the final architecture.
+
+## Experiment 1
+
+- Baseline CNN architecture
+- Initial performance benchmark established
+
+## Experiment 2
+
+- Image augmentation introduced
+- Improved model generalisation
+
+## Experiment 3
+
+- Dropout layers implemented
+- Early Stopping introduced
+- Reduced risk of overfitting
+
+## Final Model
+
+- CNN architecture
+- Data augmentation enabled
+- Dropout regularisation enabled
+- Early Stopping enabled
+- Selected based on strongest validation performance
+
+---
+
+# Model Performance
+
+## Evaluation Results
+
+| Metric | Result |
+|----------|----------|
+| Test Accuracy | 100.00% |
+| Test Loss | 0.0000 |
+
+## Confusion Matrix Results
+
+The confusion matrix demonstrated perfect classification performance on the held-out test dataset.
+
+- Healthy leaves correctly classified
+- Powdery mildew leaves correctly classified
+- No observed misclassifications within the test data
+
+While these results indicate exceptional performance, future evaluation using newly collected field images would provide additional confirmation of real-world generalisation.
+
+## Learning Curves
+
+Training and validation accuracy improved together while training and validation loss decreased consistently.
+
+The close alignment between the curves indicates strong generalisation and minimal evidence of overfitting.
+
+## Final Verdict
+
+The model exceeded the required success threshold of **97% accuracy** and therefore successfully satisfies **Business Requirement 2**.
+
+---
+
+# Dashboard Design
+
+## Summary Page
+
+### Content
+
+- Project overview
+- Dataset information
+- Dataset metrics
+- Business requirements
+
+### Addresses
+
+- Business Understanding
+- CRISP-DM Business Understanding
+
+---
+
+## Leaf Visualizer Page
+
+### Content
+
+- Healthy montage
+- Powdery mildew montage
+- Average images
+- Variability images
+- Difference image
+- Pixel-intensity histogram
+- Image dimension plot
+- Class-distribution plot
+- Plot interpretations
+
+### Addresses
+
+- Business Requirement 1
+
+---
+
+## Powdery Mildew Detector Page
+
+### Content
+
+- Image uploader
+- Live predictions
+- Confidence scores
+- Prediction summary table
+- CSV report download
+
+### Addresses
+
+- Business Requirement 2
+
+---
+
+## Project Hypotheses Page
+
+### Content
+
+- Hypotheses
+- Validation procedures
+- Supporting evidence
+- Conclusions
+
+### Addresses
+
+- Business Requirements 1 and 2
+
+---
+
+## ML Performance Page
+
+### Content
+
+- Model evolution
+- Hyperparameter discussion
+- Interactive learning curves
+- Confusion matrix
+- Evaluation metrics
+- Final model verdict
+
+### Addresses
+
+- Business Requirement 2
+
+---
+
+# Testing
+
+## Manual Application Testing
+
+| Test Case | Expected Result | Outcome |
+|------------|----------------|----------|
+| Summary Page Loads | Dataset information displayed | Pass |
+| Leaf Visualizer Loads | Visualisations displayed successfully | Pass |
+| Hypotheses Page Loads | Validation information displayed | Pass |
+| ML Performance Loads | Evaluation information displayed | Pass |
+| Detector Accepts Images | Uploaded images processed | Pass |
+| CSV Export Works | Prediction report downloads | Pass |
+
+## Model Testing
+
+The final CNN model was evaluated using:
+
+- Test Accuracy
+- Test Loss
+- Confusion Matrix
+- Training History
+- Validation History
+
+The model exceeded the business success criterion.
+
+---
+
+# Project Structure
 
 ```text
-├── app.py                      # Main Streamlit dashboard application
-├── src/                        # Modular source code
-│   ├── data_management.py      # Artifact loading & caching utilities
-│   └── machine_learning.py     # Image preprocessing & inference engine
-├── outputs/v1/                 # Saved model artifacts & visualization outputs
-│   ├── powdery_mildew_detector_model.h5
-│   ├── class_indices.pkl
-│   ├── evaluation.pkl
-│   ├── avg_var_healthy.png
-│   ├── avg_var_powdery_mildew.png
-│   ├── avg_diff.png
-│   ├── confusion_matrix.png
-│   └── model_training_history.png
-├── inputs/                     # Kaggle raw dataset & split image directories
-├── Procfile                    # Deployment execution command
-├── setup.sh                    # Streamlit server port configuration script
-├── requirements.txt            # Python dependencies
-├── runtime.txt                 # Specified Python version (3.10.12)
-└── README.md                   # Project documentation
-````
+├── app.py
+├── app_pages
+│   ├── page_summary.py
+│   ├── page_leaf_visualizer.py
+│   ├── page_mildew_detector.py
+│   ├── page_project_hypotheses.py
+│   └── page_ml_performance.py
+│
+├── src
+│   ├── data_management.py
+│   └── machine_learning.py
+│
+├── outputs
+├── inputs
+├── requirements.txt
+├── runtime.txt
+├── Procfile
+├── setup.sh
+└── README.md
+```
 
-## 🛠️ Technologies Used
-- Language: Python 3.10.12
+---
 
-- Web Framework: Streamlit
+# Technologies Used
 
-- Deep Learning: TensorFlow, Keras
+## Languages
 
-- Data Processing & Manipulation: NumPy, Pandas
+- Python
 
-- Data Visualization: Matplotlib, Seaborn
+## Frameworks
 
-- Image Processing: Pillow (PIL)
+- Streamlit
+- TensorFlow
+- Keras
 
-- Model Serialization: Pickle, Joblib
+## Data Processing
 
-## 🚀 Local Setup & Deployment
-Local Execution  
+- NumPy
+- Pandas
 
-1. Clone the repository:  
-`Bash
+## Visualisation
+
+- Plotly
+- Matplotlib
+- Seaborn
+
+## Image Processing
+
+- Pillow
+
+## Deployment
+
+- Heroku
+
+---
+
+# Deployment
+
+## Local Deployment
+
+```bash
 git clone <repository-url>
-cd <repository-folder>`
 
-2. Create and activate a virtual environment:  
-`Bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate`
+cd <repository-folder>
 
-3. Install dependencies:  
-`Bash
-pip install -r requirements.txt`
+python -m venv .venv
+
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+streamlit run app.py
+```
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+
+streamlit run app.py
+```
+
+## Heroku Deployment
+
+The project includes:
+
+- `Procfile`
+- `runtime.txt`
+- `requirements.txt`
+- `setup.sh`
+
+These files allow deployment of the Streamlit dashboard to Heroku.
+
+---
+
+# Credits
+
+## Dataset
+
+- Code Institute Cherry Leaves Dataset
+- Kaggle
+
+## Libraries
+
+- TensorFlow
+- Keras
+- Streamlit
+- Plotly
+- NumPy
+- Pandas
+- Matplotlib
+- Seaborn
+- Pillow
+
+## Acknowledgements
+
+- Code Institute
+- Farmy & Foods project brief
+- Cherry Leaves Machine Learning walkthrough inspiration
 
 
-5. Launch the Streamlit dashboard:  
-`Bash
-streamlit run app.py`
 
-## Cloud Deployment (Heroku)
-The repository includes all required deployment configuration files:
 
-- `Procfile`: Executes `setup.sh` and runs `app.py`.
 
-- `setup.sh`: Dynamically binds Streamlit to the `$PORT` provided by the cloud platform.
 
-- `requirements.txt`: Specifies `tensorflow-cpu` to keep slug sizes light and optimize container startup.
 
-- `runtime.txt`: Pins the Python runtime engine (`python-3.10.12`).
 
 
