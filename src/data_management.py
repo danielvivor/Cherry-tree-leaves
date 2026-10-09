@@ -7,7 +7,8 @@ import numpy as np
 from PIL import Image
 import streamlit as st
 import tensorflow as tf
-from tensorflow.keras.layers import InputLayer
+from tensorflow.keras.layers import InputLayer, Rescaling
+from tensorflow.keras.mixed_precision import Policy
 
 
 def download_model_if_missing(model_path):
@@ -39,32 +40,63 @@ def download_model_if_missing(model_path):
                 f.write(chunk)
 
 
-# Custom InputLayer wrapper to safely sanitize legacy/Keras 3 config keys
+def sanitize_keras_config(config):
+    """
+    Recursively strips Keras 3 specific parameters ('DTypePolicy', 'optional', 'batch_shape')
+    from layer configurations so Keras 2 / TF 2.15 can deserialize the model cleanly.
+    """
+    if not isinstance(config, dict):
+        return config
+
+    cleaned = {}
+    for key, value in config.items():
+        # Handle Keras 3 DTypePolicy dictionary structure
+        if key == "dtype" and isinstance(value, dict) and "config" in value:
+            cleaned[key] = value["config"].get("name", "float32")
+        # Remove unsupported Keras 3 attributes on InputLayer
+        elif key == "optional":
+            continue
+        elif key == "batch_shape" and isinstance(value, list) and len(value) > 1:
+            cleaned["input_shape"] = tuple(value[1:])
+        elif isinstance(value, dict):
+            cleaned[key] = sanitize_keras_config(value)
+        elif isinstance(value, list):
+            cleaned[key] = [sanitize_keras_config(item) for item in value]
+        else:
+            cleaned[key] = value
+
+    return cleaned
+
+
 class FixedInputLayer(InputLayer):
     @classmethod
     def from_config(cls, config):
-        config = config.copy()
-        # Clean unrecognized attributes
-        config.pop("optional", None)
-        if "batch_shape" in config:
-            batch_shape = config.pop("batch_shape")
-            if batch_shape and len(batch_shape) > 1:
-                config["input_shape"] = tuple(batch_shape[1:])
-        return super().from_config(config)
+        return super().from_config(sanitize_keras_config(config))
+
+
+class FixedRescaling(Rescaling):
+    @classmethod
+    def from_config(cls, config):
+        return super().from_config(sanitize_keras_config(config))
 
 
 @st.cache_resource
 def load_model_and_classes(model_path, class_indices_path):
     """
-    Loads and caches the trained Keras model, passing custom objects to safely deserialize InputLayer config.
+    Loads and caches the trained Keras model, mapping Keras 3 config types to compatible layers.
     """
     download_model_if_missing(model_path)
 
-    # Load model passing custom object mapping to handle modified InputLayer schema
+    custom_objects = {
+        "InputLayer": FixedInputLayer,
+        "Rescaling": FixedRescaling,
+        "DTypePolicy": Policy("float32"),
+    }
+
     model = tf.keras.models.load_model(
         model_path,
         compile=False,
-        custom_objects={"InputLayer": FixedInputLayer}
+        custom_objects=custom_objects
     )
 
     with open(class_indices_path, "rb") as f:
