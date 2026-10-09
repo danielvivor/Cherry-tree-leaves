@@ -1,15 +1,14 @@
 import os
+# Force TensorFlow to use legacy Keras 2 API deserializer
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 import pickle
 import requests
 import joblib
 import pandas as pd
 import numpy as np
 from PIL import Image
-
-# Prevent TensorFlow from allocating GPU/excess memory
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ['OMP_NUM_THREADS'] = '1'
-
 import tensorflow as tf
 import streamlit as st
 
