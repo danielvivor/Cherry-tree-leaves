@@ -1,16 +1,15 @@
 import os
-# Force TensorFlow to use legacy Keras 2 API deserializer
-os.environ["TF_USE_LEGACY_KERAS"] = "1"
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-
 import pickle
 import requests
 import joblib
 import pandas as pd
 import numpy as np
 from PIL import Image
-import tensorflow as tf
 import streamlit as st
+
+# Direct Keras import to handle native Keras 3 .h5 deserialization
+import keras
+
 
 def download_model_if_missing(model_path):
     """
@@ -40,22 +39,23 @@ def download_model_if_missing(model_path):
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
 
+
 @st.cache_resource
 def load_model_and_classes(model_path, class_indices_path):
     """
-    Loads and caches the trained Keras model and class index mapping.
-    Automatically downloads the model from GitHub Releases if missing.
+    Loads and caches the trained model using standalone Keras to match the saved model config schema.
     """
     download_model_if_missing(model_path)
 
-    # Load model using native TF 2.15 Keras 2 deserializer
-    model = tf.keras.models.load_model(model_path, compile=False)
+    # Load model directly using standalone Keras serializer
+    model = keras.models.load_model(model_path, compile=False)
 
     with open(class_indices_path, "rb") as f:
         class_indices = pickle.load(f)
 
     map_labels = {v: k for k, v in class_indices.items()}
     return model, map_labels
+
 
 @st.cache_data
 def load_pkl_data(file_path):
@@ -65,6 +65,7 @@ def load_pkl_data(file_path):
     with open(file_path, "rb") as f:
         data = pickle.load(f)
     return data
+
 
 if __name__ == "__main__":
     print("data_management.py executed successfully!")
