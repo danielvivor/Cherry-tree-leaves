@@ -95,7 +95,7 @@ def page_mildew_detector():
 
     df_results = pd.DataFrame(results)
 
-    st.dataframe(df_results, use_container_width=True)
+    st.table(df_results)
 
     csv_data = df_results.to_csv(index=False).encode("utf-8")
 
