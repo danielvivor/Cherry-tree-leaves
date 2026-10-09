@@ -51,19 +51,44 @@ def page_ml_performance():
     # Hyperparameter / Model Evolution
     # ==================================================
 
-    st.header("Model Evolution")
+    st.header("Model Evolution & Hyperparameter Tuning")
 
-    st.markdown("""
-    The model underwent several design improvements:
+st.markdown("""
+### Experiment 1
+- Baseline CNN architecture
+- No augmentation
+- Initial validation accuracy below target
 
-    - Image augmentation applied to reduce overfitting.
-    - Dropout layers introduced to improve generalisation.
-    - Early Stopping used to prevent unnecessary training.
-    - Training monitored using validation accuracy and validation loss.
+### Experiment 2
+- Added image augmentation
+- Improved generalisation performance
+- Reduced overfitting
 
-    The final model was selected because it demonstrated
-    the strongest balance between accuracy and generalisation.
-    """)
+### Experiment 3
+- Added Dropout layers
+- Added Early Stopping callback
+- Improved validation stability
+
+### Final Model
+- Data augmentation enabled
+- Dropout regularisation enabled
+- Early Stopping enabled
+- Selected based on strongest validation performance
+- Exceeded the business target of 97% accuracy
+""")
+
+st.info(
+    """
+    Interpretation:
+
+    Multiple model configurations were evaluated before selecting
+    the final architecture.
+
+    The final model was chosen because it achieved the strongest
+    balance between prediction accuracy and generalisation on
+    unseen data.
+    """
+)
 
     st.write("---")
 
