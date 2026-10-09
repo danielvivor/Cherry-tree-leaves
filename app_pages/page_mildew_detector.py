@@ -11,6 +11,7 @@ from src.machine_learning import predict_leaf
 
 def page_mildew_detector():
 
+    # Get root directory: app_pages/ -> root
     project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     outputs_dir = os.path.join(project_dir, "outputs", "v1")

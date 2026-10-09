@@ -4,9 +4,8 @@ import streamlit as st
 
 def page_leaf_visualizer():
 
-    project_dir = os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))
-    )
+    # Get root directory: app_pages/ -> root
+    project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     outputs_dir = os.path.join(
         project_dir,

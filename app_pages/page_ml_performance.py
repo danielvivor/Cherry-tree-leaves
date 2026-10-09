@@ -12,6 +12,7 @@ def page_ml_performance():
     # Paths
     # --------------------------------------------------
 
+    # Get root directory: app_pages/ -> root
     project_dir = os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))
     )
@@ -21,17 +22,6 @@ def page_ml_performance():
         "outputs",
         "v1"
     )
-
-    st.write("Project Directory:", project_dir)
-    st.write("Outputs Directory:", outputs_dir)
-
-    if os.path.exists(outputs_dir):
-        st.success("outputs/v1 found")
-
-        st.write("Files in outputs/v1:")
-        st.write(os.listdir(outputs_dir))
-    else:
-        st.error("outputs/v1 NOT FOUND")
 
     # --------------------------------------------------
     # Title
