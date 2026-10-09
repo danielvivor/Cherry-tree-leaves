@@ -6,9 +6,8 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import streamlit as st
-
-# Direct Keras import to handle native Keras 3 .h5 deserialization
-import keras
+import tensorflow as tf
+from tensorflow.keras.layers import InputLayer
 
 
 def download_model_if_missing(model_path):
@@ -40,15 +39,33 @@ def download_model_if_missing(model_path):
                 f.write(chunk)
 
 
+# Custom InputLayer wrapper to safely sanitize legacy/Keras 3 config keys
+class FixedInputLayer(InputLayer):
+    @classmethod
+    def from_config(cls, config):
+        config = config.copy()
+        # Clean unrecognized attributes
+        config.pop("optional", None)
+        if "batch_shape" in config:
+            batch_shape = config.pop("batch_shape")
+            if batch_shape and len(batch_shape) > 1:
+                config["input_shape"] = tuple(batch_shape[1:])
+        return super().from_config(config)
+
+
 @st.cache_resource
 def load_model_and_classes(model_path, class_indices_path):
     """
-    Loads and caches the trained model using standalone Keras to match the saved model config schema.
+    Loads and caches the trained Keras model, passing custom objects to safely deserialize InputLayer config.
     """
     download_model_if_missing(model_path)
 
-    # Load model directly using standalone Keras serializer
-    model = keras.models.load_model(model_path, compile=False)
+    # Load model passing custom object mapping to handle modified InputLayer schema
+    model = tf.keras.models.load_model(
+        model_path,
+        compile=False,
+        custom_objects={"InputLayer": FixedInputLayer}
+    )
 
     with open(class_indices_path, "rb") as f:
         class_indices = pickle.load(f)
