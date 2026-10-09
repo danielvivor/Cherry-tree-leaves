@@ -2,5 +2,3 @@
 .venv
 __pycache__/
 *.h5
-*.pkl
-outputs/
