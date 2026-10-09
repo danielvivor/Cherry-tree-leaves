@@ -1,14 +1,8 @@
-#!/bin/bash
-
-# Create Streamlit config directory
 mkdir -p ~/.streamlit/
 
-# Write cloud-friendly server config
-cat <<EOF > ~/.streamlit/config.toml
+echo "\
 [server]
 headless = true
+port = \$PORT
 enableCORS = false
-port = $PORT
-EOF
-
-echo "Streamlit cloud configuration created successfully."
+" > ~/.streamlit/config.toml
