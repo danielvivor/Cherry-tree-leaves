@@ -8,7 +8,28 @@ The **Mildew Detection in Cherry Leaves** application is an end-to-end Machine L
 - **Business Requirement 1:** Conduct a visual study to differentiate healthy cherry leaves from leaves infected with powdery mildew using average images, variability plots, difference images, and visual montages.
 - **Business Requirement 2:** Deliver an accurate binary classification model predicting with at least **97% accuracy** whether a cherry leaf image is healthy or contains powdery mildew.
 
+---
+
+## 📊 Dataset Content & Characteristics
+The dataset used in this project is a curated collection of high-resolution cherry tree leaf images provided by **Farmy & Foods**. The raw image assets are sourced and downloaded directly from the official [Code Institute Cherry Leaves Dataset on Kaggle](https://kaggle.com).
+
+### 🏷️ Target Classes & Image Distribution
+The dataset contains a total of **4,208 images** perfectly distributed in a 50/50 balance across two binary classification categories:
+* **`healthy`**: 2,104 images displaying clear, unblemished cherry tree leaves representing healthy crop conditions.
+* **`powdery_mildew`**: 2,104 images displaying cherry tree leaves presenting clear indicators of powdery mildew (a fungal disease showing white/gray powdery spots and surface anomalies).
+
+### 📐 Image Characteristics & Data Splitting
+* **Format & Color Space:** All files are stored as standard color images in the **RGB** color space.
+* **Dimensionality:** The native shapes of the images vary across the raw collection. Through exploratory data analysis, the mathematical average image shape was calculated to be exactly **256 x 256 pixels**. Consequently, all images are dynamically resized to `256, 256, 3` during data loading.
+* **CRISP-DM Data Partitioning:** To ensure robust evaluation and prevent data leakage, the 4,208 images were split into the following structures:
+  * **Train Set (70%):** 2,944 images used to optimize model weights.
+  * **Validation Set (10%):** 422 images used to monitor training dynamics and prevent overfitting.
+  * **Test Set (20%):** 842 images kept completely unseen for final validation.
+
+---
+
 ## 👤 User Stories & ML Mapping
+
 
 | User Story | Description | Task Type | Action & Deliverable | Mapping |
 | :--- | :--- | :--- | :--- | :--- |
